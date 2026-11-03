@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Computer Exam Quiz ( 12th )</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--text:#1d2330;--muted:#6b7280;--line:#e2e5ec;--accent:#4f46e5;--ok:#16a34a;--okbg:#dcfce7;--bad:#dc2626;--badbg:#fee2e2}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1117;--card:#181b25;--text:#e8eaf0;--muted:#9aa3b2;--line:#2a2f3d;--accent:#818cf8;--ok:#4ade80;--okbg:#14351f;--bad:#f87171;--badbg:#3a1717}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100%}
+.wrap{max-width:640px;margin:0 auto;padding:16px;padding-top:calc(16px + env(safe-area-inset-top,0px));padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
+h1{font-size:19px;margin:4px 0 12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
+.stats{display:flex;gap:6px;flex-wrap:wrap;font-size:13px;margin-bottom:6px}
+.pill{background:var(--line);border-radius:999px;padding:4px 10px}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin-top:8px}
+.bar>div{height:100%;background:var(--accent);width:0}
+.muted{color:var(--muted);font-size:13px}
+.q{font-size:17px;line-height:1.5;margin:8px 0 12px;white-space:pre-wrap}
+.opt{display:block;width:100%;text-align:left;padding:12px 14px;margin:8px 0;border:1.5px solid var(--line);border-radius:10px;background:var(--card);color:var(--text);font-size:15px;cursor:pointer;font-family:inherit}
+.opt:disabled{cursor:default}
+.opt.ok{background:var(--okbg);border-color:var(--ok)}
+.opt.bad{background:var(--badbg);border-color:var(--bad)}
+input.fill{width:100%;padding:12px;font-size:15px;border:1.5px solid var(--line);border-radius:10px;background:var(--card);color:var(--text);font-family:inherit}
+input.fill.ok{border-color:var(--ok);background:var(--okbg)}
+input.fill.bad{border-color:var(--bad);background:var(--badbg)}
+.btn{padding:12px 16px;border-radius:10px;border:none;background:var(--accent);color:#fff;font-size:15px;cursor:pointer;font-family:inherit}
+.btn.sec{background:var(--line);color:var(--text)}
+.btn:disabled{opacity:.4;cursor:default}
+.btn.small{padding:8px 12px;font-size:13px}
+.row{display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap;margin-top:12px}
+.fb{margin-top:12px;padding:10px 12px;border-radius:10px;font-size:15px;line-height:1.4}
+.fb.ok{background:var(--okbg);color:var(--ok)}
+.fb.bad{background:var(--badbg);color:var(--bad)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:6px;margin-top:8px}
+.dot{padding:8px 0;text-align:center;font-size:13px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer;font-family:inherit}
+.dot.okd{background:var(--ok);color:#fff;border-color:var(--ok)}
+.dot.bd{background:var(--bad);color:#fff;border-color:var(--bad)}
+.dot.cur{outline:2px solid var(--accent);outline-offset:1px}
+.wrong{border-bottom:1px solid var(--line);padding:10px 0;font-size:14px;line-height:1.5}
+.big{font-size:28px;font-weight:700;margin:4px 0}
+.sum{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.sum div{background:var(--bg);border-radius:10px;padding:10px;font-size:13px}
+.sum b{display:block;font-size:18px}
+.credit{display:block;margin:20px auto 0;background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;text-decoration:underline;font-family:inherit;padding:8px}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;z-index:50}
+.overlay.open{display:flex}
+.modal{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;width:100%;max-width:420px;box-sizing:border-box}
+.modal h2{font-size:18px;margin:0 0 4px}
+.ch{display:flex;align-items:center;gap:12px;padding:12px 14px;margin:8px 0;border:1.5px solid var(--line);border-radius:10px;background:var(--card);color:var(--text);text-decoration:none}
+.ch:hover{border-color:var(--accent)}
+.ch svg{flex-shrink:0;width:56px;height:auto}
+.ch b{display:block;font-size:15px}
+.ch .muted{font-size:13px}
+.opt b{font-size:15px}
+.st{font-size:13px;font-weight:600}
+.st.y{color:var(--ok)}
+.st.n{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Computer Exam Quiz ( 12th )</h1>
+  <div id="app"></div>
+  <button class="credit" onclick="openCredit()">Made by Jeet.Palivar</button>
+  <div id="credit" class="overlay" onclick="if(event.target===this)closeCredit()">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="cr-t">
+      <h2 id="cr-t">Made by Jeet.Palivar</h2>
+      <p class="muted">Visit the YouTube channels</p>
+      <a class="ch" href="https://youtube.com/@shadzop" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 90 63" aria-hidden="true"><rect width="90" height="63" rx="14" fill="#FF0000"/><path d="M36 18 L60 31.5 L36 45 Z" fill="#FFFFFF"/></svg><span><b>Shadzop</b><span class="muted">@shadzop</span></span></a>
+      <a class="ch" href="https://youtube.com/@shadzop2" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 90 63" aria-hidden="true"><rect width="90" height="63" rx="14" fill="#FF0000"/><path d="M36 18 L60 31.5 L36 45 Z" fill="#FFFFFF"/></svg><span><b>Shadzop2</b><span class="muted">@shadzop2</span></span></a>
+      <div class="row"><button class="btn sec" onclick="closeCredit()">Close</button></div>
+    </div>
+  </div>
+</div>
+<script>
+// [type, question, options (pipe-separated) , answer index  |  for 'f': correct answer (use / for alternates)]
+const D=[
+["m","In HTML, ____ are used to help visitors of the website to input data.","Forms|links|Images|Tables",0],
+["m","The ____ tag is used to implement all elements in HTML form.","<form> … </form>|<html>…..</html>|<input> …..</input>|<body> …</body>",0],
+["m","Form element uses ____ types of attributes.","Action|Method|Name|All of above",3],
+["m","The ____ attribute specifies the HTTP method to be used when sending the data.","Method|Action|Name|All of above",0],
+["m","In form, Method attribute can take ____ values.","GET|POST|SET|Both a and b",3],
+["m","Which method retrieves the data from the form and sends it to the server by attaching it at the end of the URL?","GET|POST|SET|Both a and b",0],
+["m","In the ____ method, the data is sent as a block through the HTTP transaction.","GET|POST|SET|Both a and b",1],
+["m","The ____ method does not have any restrictions on data length.","GET|POST|SET|Both a and b",1],
+["m","The default value for method attribute in the form is ____.","GET|POST|SET|Both a and b",0],
+["m","If the form submission is active, like modifying a server side database, our form must use the ____ method.","GET|POST|SET|Both a and b",1],
+["m","If the form submission is passive, such as a search engine query, then we may use the ____ method.","GET|POST|SET|Both a and b",0],
+["m","The ____ elements are used to insert various fields like radio button, textbox etc. in the form.","Input|<form>|<body>|<html>",0],
+["m","The ____ tag is used to implement Input control element.","<input>….</input>|<html> ….</html>|<form>….</form>|<select>…</select>",0],
+["m","Which attribute of the input element specifies the field that is to be created in the form?","Type|Name|Value|Maxlength",0],
+["m","Which attribute specifies the name to be used for the field in the form?","Type|Name|Value|Maxlength",1],
+["m","Which attribute specifies the default value of the field in the form?","Type|Name|Value|Maxlength",2],
+["m","The value attribute defines the text that will be displayed in the web browser within text field when it is initially loaded.","Type|Name|Value|Maxlength",2],
+["m","____ field type is used to enter text in the form.","Text|Password|Radio buttons|Checkbox",0],
+["m","In ____ field type, the character typed is converted into non-readable format.","Text|Password|Radio buttons|Checkbox",1],
+["m","The ____ input field usually takes the form of a text input box followed by a browse button.","Text|Password|File|Checkbox",2],
+["m","____ are used for selecting one item from multiple available choices.","Text|Password|Radio buttons|Checkbox",2],
+["m","Generally ____ are used to select a single item from a given group of items.","Text|Password|Radio buttons|Checkbox",2],
+["m","The name of a group must be ____ in multiple choice selection fields like radio button, selection list, checkbox.","Same|unique|proper|admin",0],
+["m","When a ____ is used, it places on the page a square and it is marked with a check mark or tick mark when the box is selected.","Text|Password|Radio buttons|Checkbox",3],
+["m","The ____ tag is used to create a drop down menu or select list field.","<select> … </select>|<option>……</option>|<form>…..</form>|None of above",0],
+["m","The tag ____ is used to create the elements within the select list field.","<select> … </select>|<option>……</option>|<form>…..</form>|None of above",1],
+["m","If we want to make an option selected by default in list field, we can add ____ attribute to the <option> tag.","Selected|Checked|Clicked|initially selected",0],
+["m","The user can select more than one option by pressing ____ in pull down menu.","Ctrl|clicking|double clicking|both a and b",0],
+["m","The ____ element allows multi-line text input.","Textarea|Text|File|select",0],
+["m","The tag ____ is used to implement textarea element or comment box or multiple line text box.","<textarea> … </textarea>|<text>…..</text>|<input> …….</input>|<select>…..</select>",0],
+["m","The ____ element can be used to enter a comment, report or a long description of a product.","Textarea|Text|File|select",0],
+["m","The size of a textarea element can be specified using ____ attribute.","Rows|Cols|table|Both a and b",3],
+["m","In the Textarea, if input exceeds the visible area, a ____ bar appears immediately.","Scroll|Status|Title|Menu",0],
+["m","If the user wants to reset all the values to their default value or blank in the form, then the ____ button is used.","Submit|Reset|Login|Resend",1],
+["m","The ____ button is used to submit the values of the form.","Submit|Reset|Login|Resend",0],
+["m","The form handling programs may be written in ____ technology.","CGI|ASP|PHP|All of above",3],
+["m","____ is a software application that provides complete facilities to a programmer to develop software.","IDE|web browser|App|CGI",0],
+["m","____ is a free open source web development IDE software.","KompoZer|Front page|HTML|PHP",0],
+["m","____ is a complete web authoring system which integrates web page development and web file management.","KompoZer|Front page|HTML|PHP",1],
+["m","A ____ gives rapid access to the files on both local machines and remote servers.","Site Manager|Web Manager|Web server|Work station",0],
+["m","To view the different tool bars and status bar, click on ____.","View → Show / Hide|Format → Show/Hide|Edit → Show / Hide|none",0],
+["m","In KompoZer, below the menu bar there are ____ tool-bars.","Composition|Format Toolbar1|Format Toolbar2|All of above",3],
+["m","Which toolbar is used to create a new file, open a file, save a file or publish a web page in KompoZer?","Composition|Format Toolbar1|Format Toolbar2|All of above",0],
+["m","The ____ toolbar is used to format the text, add bullets, numbering and perform similar formatting operations.","Composition|Format Toolbar1|Format Toolbar2|Both b and c",3],
+["m","In the center of KompoZer window, there are ____ panes.","Site Manager|blank web page|Composition|both a and b",3],
+["m","____ is a powerful tool used to navigate within the site or between the sites.","Site Manager|Web Manager|Web server|Work station",0],
+["m","Edit mode toolbar has ____ viewing mode in KompoZer.","Normal|HTML tags|preview|All of above",3],
+["m","The ____ mode offers the page view as seen in a browser.","Normal|HTML tags|preview|All of above",2],
+["m","The links do not operate in ____ mode.","Normal|HTML tags|preview|All of above",0],
+["m","In ____ mode the table outlines are visible.","Normal|HTML tags|preview|All of above",0],
+["m","The ____ view is similar to preview mode.","Normal|HTML tags|preview|All of above",0],
+["m","In KompoZer, the ____ tab is used to design the web page.","Split|Design|Source|All of above",1],
+["m","In KompoZer, the ____ tab displays the HTML source of the current element.","Split|Design|Source|All of above",2],
+["m","In KompoZer, the ____ tab helps the user in editing the source code of a web page.","Split|Design|Source|All of above",2],
+["m","In KompoZer, when we click File → New, a dialog box appears with ____ title.","Create a new document or template|new document|design document|Template",0],
+["m","To create a form in KompoZer, the ____ menu option is used.","Insert → Form → Define Form|Form → Define form|Insert → Define form|Define form",0],
+["m","In the ____ tab of form properties dialog box, enter the file name where you want the form data to be submitted.","Name|Action URL|Method|Form",1],
+["m","In the working area of KompoZer, a form is inserted with a ____ colored outline in the untitled page.","Black|light blue|light red|light green",1],
+["m","In KompoZer, all the form elements will be placed within the ____ dotted box.","Blue|Red|Green|Orange",1],
+["m","To insert any form fields like textbox, password box, file selection box, check box, radio button, submit and reset buttons, click on the ____ menu option in KompoZer.","Insert → Form → Form field|Insert → Form field|Form → Form filed|Format → Form Field",0],
+["m","The ____ option is selected in form field dialog box if we want to add advanced properties to our field.","More Properties|Properties|Advanced Properties|None",0],
+["m","If you want to show some text before the user actually enters data, enter some text in the ____ textbox of form field dialog box.","Initial Value|Value|default value|proper value",0],
+["m","At the time of file saving, to give a proper title to your web page, the ____ dialog box is used.","File name|Page Title|Page Name|Name",1],
+["m","To save the KompoZer or HTML file, use the ____ extension.",".htm|.html|.HTML|Both a and b",3],
+["m","The home page that will open when the user types the website's URL is saved with the name ____.","index.html|home.html|untitled.html|*.html",0],
+["m","The ____ option is the attribute of radio button and check-box fields when the user wants to select by default.","Selected|Checked|Initially Selected|value selected",1],
+["m","When we create radio buttons within a group, the group name must be the ____ for all the possible answers.","Same|unique|proper|public",0],
+["m","In KompoZer, to insert the drop down or list field, use the ____ menu option.","Form → Selection List|Insert → Form → Form Field|Format → Form field|Edit → Selection List",0],
+["m","To insert a list member into the drop down or list field, click on the ____ button of selection list dialog box.","Add Option|+ option|Click option|Select option",0],
+["m","In KompoZer, to give a background color to the form, select the ____ menu option.","Format → Background|Format → Page Colors and Background|Format → Page Colors|Insert → Background",1],
+["m","To open KompoZer, click on the ____ menu option.","Application → Programming → KompoZer|Application → KompoZer|Application → Internet → KompoZer|Both a and c",2],
+["m","When any item in the page is clicked, on which place does its structure appear?","Status Bar|Title bar|Menu bar|Format bar",0],
+["m","What is the default form name in KompoZer?","Untitled|Document.|index|All of above",0],
+["m","What is the use of the type attribute?","To specify the field that is to be created|To specify the name to be used.",0],
+["m","What is the use of the name attribute?","To specify the field that is to be created|To specify the name to be used.",1],
+["m","What is used to accept the data over the web?","CSS|Form|Link|Table",1],
+["m","What is the default field to create a form?","Textbox|Submit Button|File selection|Reset button",0],
+["m","Which option is used in KompoZer to insert the textarea field?","Form → Text Area|Form → Form Field → Text Area.",1],
+["m","Which option is used in KompoZer to insert the label?","Form → Form Field → Define Label|Form → Define Label|Form → Define form → Label|Form → Label",0],
+["m","Which label will be seen at the bottom of the “file → new” dialog box?","Create in|Insert on|Create|Define in",0],
+["m","In which view are the forms shown surrounded by a blue dotted box?","Normal view|Preview|HTML Tags|Source",0],
+["m","All three modes of KompoZer provide which facility?","Editing|Scrolling|Design|Insert",0],
+["m","Which shows a blank untitled web page?","Site Manager|Page Pane|Slide Pane|Page Source",1],
+["m","What is the short cut key to close site manager?","F5|F9|F7|F11",3],
+["m","In which mode does the script not run?","Preview|Design|HTML Tags|Source",1],
+["m","In “HTML Tag view”, which color marker is used to indicate the start tag for all elements?","Yellow|Blue.|Orange|Green",1],
+["m","In KompoZer, which tab shows all details of the HTML code?","Split Tab|Source Tab|HTML Tags|Normal",1],
+["m","What is the URL address to download KompoZer?","www.KompoZer.net|www.KompoZer.co.in|Kompozer.in|None",0],
+["m","Which are the Open Source IDE softwares?","KompoZer|Eclipse, Jbuilder|Netbeans.|All of above",3],
+["m","What is provided by an IDE?","GUI, Text or code editor|a compiler and/or interpreter|a debugger|All of above",3],
+["m","A radio button input shows in which shape?","A circle with a dot inside|A square with a tick mark.|A Circle|Square",0],
+["m","To avoid which type of error in password entry, it is advisable to ask the user to confirm the password?","System|Typographic|Debugging|Display",1],
+["m","Which form attribute takes a file name as its value?","Action|Method|Name|Size",0],
+["m","Which allows more interactivity and control of data entry to the user?","Form|Script|Link|Table",1],
+["m","Which of the following is a container used to collect different kinds of inputs from the user?","Form|Webpage|Text|Input",0],
+["m","Which of the following element is used to create an HTML form?","Textarea|Form|Select and option|Input",1],
+["m","Which of the following is the tag used to implement form element?","<form> …</form>|<form> …<form>|</form>…</form>|<frm>…</frm>",0],
+["m","Which of the following attribute of form is used to specify where to send the form data when the form is submitted?","Method|action|submit|input",1],
+["m","Which of the following attribute of form specifies the HTTP method to be used when sending the data?","Submit|action|method|input",2],
+["m","Which of the following values are used by the method attribute?","GET and POST|GET and SET|GET and PUT|SET and POST",0],
+["m","Which of the following methods allows only a limited amount of information to be sent at a time?","GET|POST|SET|PUT",0],
+["m","Which of the following methods sends the data as a block through the HTTP transaction?","GET|SET|PUT|POST",3],
+["m","Which of the following attributes of the input element specifies the field that is to be created in the form?","Input|Type|Name|Value",1],
+["m","Which of the following elements allows multi-line text input?","Textarea|Input|Select and option|Form",0],
+["m","Which of the following elements is used to create a drop down list or menu in a form?","Input|Textarea|Select|Form",2],
+["m","Which of the following is a free open source web development IDE?","HTML|Kompozer|Scite|Base",1],
+["m","Which of the following stands for “WYSIWYG”?","When You See Is When You Get|What You See Is When You Get|What You See Is What You Get|When You See Is What You Get",2],
+["f","Full form of IDE?","Integrated Development Environment"],
+["f","Full form of GUI?","Graphical User Interface"],
+["f","Full form of CSS?","Cascading Style Sheet/Cascading Style Sheets"]
+];
+
+const D2=[
+["m","____ allows us to specify styles for the visual elements of the website.","CSS|HTML|HTTP|SET",0],
+["m","____ helps us to keep the information content of a document separate from the details of how to display it, which is known as style.","CSS|HTML|HTTP|SET",0],
+["m","Which language is used to describe the information content of the document and not the style?","HTML|C++|C|Java",0],
+["m","____ describes the style of the elements in the document and not its contents.","CSS|HTML|HTTP|SET",0],
+["m","Using ____, we can control the font types, font and elements colors, pad spaces, margins and positions in our website.","CSS|HTML|HTTP|SET",0],
+["m","Which is known as the special symbol in the syntax of CSS?","Rules|Separator|Functions|variables",0],
+["m","A CSS rule has ____ main parts.","a selector|one or more declarations|select|both a and b",3],
+["m","The ____ is the HTML element on which the user wants to apply the style.","selector|Declaration|HTML|CSS",0],
+["m","____ consists of a property associated with HTML element used in selector and its corresponding value.","Declaration|Selector|CSS|HTML",0],
+["m","In the declaration, the property and value are separated with ____ sign and surrounding with ____ brackets.",": (colon) , { } curly|; (Semicolon) , <> Angular|, (comma) , ( ) Circle|None",0],
+["f","The syntax of CSS: H1 { color : green }. Name the three parts marked by the arrows, in order.","Selector Property Value/Selector, Property, Value"],
+["m","KompoZer uses CSS by default, but when it is not selected, click ____ and select the checkbox Use CSS Styles instead of HTML elements and attributes.","Edit --> Preferences|Insert Preferences|Tools Preferences|None",0],
+["m","Cascade button is available on the ____ toolbar.","Format 1|Format2|composition|Status",1],
+["m","When the user selects the internal style sheet option from the CSS stylesheet dialog box, on the right side of the window, the user will see ____ types of various tabs.","general, Text, Background|Borders, Box|Lists and Aural|All of above",3],
+["m","The ____ tab has various styles like Font family, Font size, line height, color, case, Alignment and many more.","Text|Background|General|Borders",0],
+["m","To set the background color, select the ____ tab from the CSS stylesheet dialog box.","Text|Background|General|Borders",1],
+["m","If the user wants to keep an image in the background, then in the Image option, click on ____ button and select the file for the background.","Choose file|Browse|select file|download",1],
+["m","To set the border, select the ____ tab from the CSS stylesheet dialog box.","Text|Background|General|Borders",3],
+["m","Which option is selected when the user wants to apply the same border on all the four sides from the CSS stylesheet dialog box?","“All four sides use same border style”|Side use same border style|All two sides use same border style|all border are same style",0],
+["m","Which tab will show the CSS code (Source code) which is generated through the user?","General|Text|Borders|Background",0],
+["m","To add the other elements, click on the arrow of ____ button in the upper left corner of the CSS stylesheet dialog box.","CSD|CSS|BDS|HTML",1],
+["m","____ allows us to set the format of the website without changing the underlying structure.","CSD|CSS|BDS|HTML",1],
+["m","The disadvantages of CSS are the CSS ____ varies with different browsers.","Compatibility|Confidential|Predefine|All",0],
+["m","HTML only provides ____ web pages.","Static|Dynamic|simple|Double",0],
+["m","JavaScript provides ____ and interactive web pages.","Static|Dynamic|simple|Double",1],
+["m","A ____ language is a simple, lightweight programming language that does not contain the advanced programming functionalities of languages like C and Java.","scripting|Action|Assembly|Machinery",0],
+["m","____ is a scripting language that allows user to add programming aspects to user's web pages.","C|C++|Java|JavaScript",3],
+["m","____ is used in web pages to improve the design and validate the forms.","C|C++|Java|JavaScript",3],
+["m","____ web browsers support JavaScript.","Firefox, Chrome|Safari|Internet Explorer|All of above",3],
+["m","What type of a script is JavaScript?","Application client side|Application side|Client side|user side",2],
+["m","____ is used to validate the data entered in the HTML forms on the client side before sending it to the server.","C|C++|Java|JavaScript",3],
+["m","JavaScript can be placed inside the ____ section of an HTML page.","<body>|<head>|<title>|Both a or b",3],
+["m","From the following statement, document.write(HELLO), which is a method that is a part of the document object?","document|write|Hello|None",1],
+["m","In JavaScript, the statements always end with the ____ sign.","semicolon ( ; )|colon ( : )|coma ( , )|caret ( ^ )",0],
+["m","JavaScript statements can be grouped together in a block which starts and ends with the ____ bracket.","{ } (curly)|[ ] (square)|( ) (Rounded)|< > (Angular)",0],
+["m","To add the script inside the <head> tag, user must open the ____ view of a page.","Design|Source|Split|Normal",1],
+["m","What is a reusable block of code that performs a particular task?","function ( routine )|source|rules|variable",0],
+["m","A function is defined by the keyword ____.","fun|function|FUN|var fun",1],
+["m","____ is useful in creating interactive web pages which respond to the action performed by the user.","JavaScript|HTML|CSS|DHTML",0],
+["m","The interaction between the user and the web page causes the browser to generate ____.","event|event handler|Processor|Function",0],
+["m","When an event occurs, a specific JavaScript code is executed in response to a given situation. This JavaScript code is known as ____.","event handler|event|function|block",0],
+["m","A ____ is a container for storing data.","variable|function|event|event handler",0],
+["m","Variables can store ____ type of data.","numbers|strings|text|All of above",3],
+["m","In JavaScript, we can declare a variable using the ____ keyword.","var|variable|v|VAR",0],
+["m","The conditional statement ____ is used to change the flow of the program.","if|case|for|while",0],
+["m","The ____ statement evaluates an expression to validate a specific condition.","if|case|for|while",0],
+["m","To control the web browser's window or the web page, the user uses the ____ model.","Browser Object Model (BOM)|Browser Object Machine (BOM)|Browser oriented Model (BOM)|Browser Objective Model (BOM)",0],
+["m","All browsers are split into different parts or objects that can be accessed using JavaScript. These parts are known as the ____.","Browser Object Model (BOM)|Browser Object Machine (BOM)|Browser oriented Model (BOM)|Browser Objective Model (BOM)",0],
+["m","BOM represents the ____ of entire browser along with the toolbar, menu, status bar, web page and many more.","hierarchy|single level|liner|multi level",0],
+["m","The user does not have to create ____ in a browser object model; they are created automatically when the browser opens the web page.","object|function|variable|block",0],
+["m","____ object represents the browser window or individual frame within the window which is created automatically by the browser.","Window|document|form|variable",0],
+["m","The ____ object is the most important object in the browser object model.","Window|document|form|variable",0],
+["m","The ____ object is used to represent the web page displayed in the browser.","Window|document|form|variable",1],
+["m","All the elements of the web page like forms, images, links and others are contained within the ____ object.","Window|document|form|variable",1],
+["m","The ____ object is used by JavaScript to represent forms created using the <form> element within the document object.","Window|document|form|variable",2],
+["m","The ____ object is used to reference each element in a form.","Window|document|form|element",3],
+["m","The ____ object can be radio, text, checkbox or any other object.","Window|document|form|element",3],
+["m","____ method is used to apply focus on a particular element of a form.","focus( )|load( )|function|int( )",0],
+["m","____ mark is an indication to the user that it is a compulsory field which should not be kept empty.","* (astrick)|@|$|&",0],
+["m","To work with numeric values, JavaScript uses ____ function.","built-in|user define|default|none",0],
+["m","One of the most commonly used numeric functions is ____.","isNaN()|NaN()|Is NaN()|isN()",0],
+["m","isNaN() function returns ____ if the value is not-a-number.","True|False|yes|no",0],
+["m","isNaN() function returns ____ if the value is a number.","True|False|yes|no",1],
+["m","isNaN(123) function returns ____ as the value 123 is a number.","True|False|yes|no",1],
+["m","NaN(hello) returns true as the value hello is not a number.","True|False|yes|no",0],
+["m","From the following, which is an advantage of CSS?","CSS has less codes compared to that in HTML.|CSS makes website designing quick and efficient.|To change the style of an element only needs modifications in the CSS file.|All of these",3],
+["m","In the following JavaScript example, document.write(SWA SE SWACHHATA TAK); which is known as the method?","document|dot ( . )|write|( );",2],
+["m","JavaScript statements can be grouped together in a block, and the block starts and ends with which brackets?","curly|Square|Round|Angle",0],
+["m","Which of the following is not an example of an Event in JavaScript?","error|load|take|focus",2],
+["m","Which of the following objects comes under the document object in the browser object model?","Form, link|Form, history|Form, self|Form, parent",0],
+["m","In the JavaScript statement var x=document.gseb.Eng.value; which of the following indicates the form name in KompoZer?","document|gseb|Eng|value",1],
+["m","Which method sends the data as a block through the HTTP transition?","PUT|SET|POST|GET",2],
+["m","Which of the following icons comes in the composition toolbar at KompoZer?","Bullet|Font|Open|Bold",2],
+["m","Which of the following colored outlines is inserted by KompoZer after defining a form?","File name, Action URL, method|Form name, Anchore name, methods|Force name, method URL, method|Form name, Action URL, method",3],
+["m","Which dialog box is viewed when the user clicks the save button for the first time in KompoZer?","Close all|save all|save as|Page title",2],
+["m","Which element is used to create a drop down list or menu in a form?","Drop|Input|Select|Area",2],
+["m","Which operator is used for OR in a JavaScript statement?","‖|&&|;;|**",0],
+["m","Which event is used in JavaScript for form fields to reset default values?","reset|changes|abort|load",0],
+["m","What will be the form name in KompoZer if variable x is defined as var x = document.oct.month.values;?","month|value|document|oct",3],
+["m","Which of the following is an inbuilt function provided by JavaScript?","alert( )|valiform( )|hello( )|validate forms( )",0],
+["m","Which of the following is a collection of interlinked webpages?","Kompozer|form|webpage|Website",3],
+["m","In JavaScript, which event occurs when loading of an image is cancelled?","blur|load|abort|unload",2],
+["m","In KompoZer, which option of the Table tab of the Table properties dialog box is used to align the table as left, right or center?","size|Border and spacing|Table Alignment|Caption",2],
+["m","Which of the following toolbars is not available in KompoZer?","Preview|Format Toolbar1|Format Toolbar2|Composition",0],
+["m","In KompoZer, the cascade button is available on which toolbar?","Edit mode|Composition|Format toolbar1|Format toolbar2",3],
+["m","In the browser object model, elements of a webpage like forms, images, links etc. are contained within which object?","history|document|location|buttons",1],
+["m","Which of the following is not a part of CSS syntax?","selector|property|value|event",3],
+["m","In the CSS stylesheets dialog box of KompoZer, which tab is used to change the color of a font?","General|Text|Background|Lists",1],
+["m","Which statement is used to return a value in a function of JavaScript?","return|function|select|send",0],
+["m","Which statement is true for JavaScript variables? i. Variables in JavaScript are case sensitive. ii. Variables can store numbers, strings or text. iii. Variables can be declared using the var keyword.","Only (i) and (iii)|Only (ii) and (iii)|Only (i) and (ii)|(i), (ii) and (iii)",3],
+["m","Which of the following allows specifying styles for the visual elements of the website?","Cascading Style Sheets|Webpage|Form|Animation",0],
+["m","Which of the following is known as the special symbol in the syntax of CSS?","Rules|Selector|Declaration|Input",0],
+["m","Which of the following are the two main parts of a CSS rule?","Selector , declaration|select, declaration|Selector, declare|selection, declaration",0],
+["m","Which of the following is an HTML element on which style can be applied?","declaration|selector|select|declare",1],
+["m","What is the syntax of CSS?","Selector { property : value }|select { property : value }|selector { value : property }|Selection { property : value }",0],
+["m","Which of the following has developed JavaScript?","Yahoo|Google|Wikipedia|Netscape",3],
+["m","Which of the following is a scripting language that allows adding programming to web pages?","Action Script|JavaScript|HTML|CSS",1],
+["m","Which of the following is a scripting language that is a simple, lightweight programming language that does not contain advanced programming functionalities?","Action Script|JavaScript|HTML|CSS",1],
+["m","Which of the following tags is used to insert JavaScript code into an HTML page?","<script> …script>|<script> ....<\/script>|<script>…<//Script>|<\/script>..<\/script>",1],
+["m","Which of the following symbols signifies the start and end of a JavaScript block?","semicolon|Square bracket|curly bracket|Round bracket",2],
+["m","Which of the following is a reusable block of code that performs a particular task?","Array|Code|Program|Function",3],
+["m","Which of the following statements is used to return a value in a function?","return|function|select|send",0],
+["m","Which of the following is generated by the browser due to interaction between the user and the web page?","Function|Response|Event|Value",2],
+["m","Which of the following is not an event?","Abort|Mouseover|Set|Load",2],
+["m","Which of the following is a container for storing data?","variable|Integer|Event|Event handler",0],
+["m","Which of the following stands for BOM?","Browser Of Model|Browser Object Model|Browser Object Modelling|Browse Object Model",1],
+["m","Which of the following is the top level object in the BOM?","window|document|page|Location",0],
+["m","Which of the following stands for NaN?","Not a Numeric|Not a Number|Not a Noun|Not an Numeric",1]
+];
+const D3=[
+["m","____ plays a very important role in a business nowadays.","Website|webpage|Web browser|Web host",0],
+["m","____ is a collection of interlinked web pages for a specific purpose.","Website|webpage|Web browser|Web host",0],
+["m","____ defines what we want to achieve by developing a website.","Objective|Goal|Planning|Target",0],
+["m","Once you know the reason for developing a website, you must decide ____ of the website.","Objective|Goal|Planning|Target",2],
+["m","____ means for whom the website is to be developed.","Objective|Goal|Planning|Target audience",3],
+["m","From the following, which is important for the content of a webpage?","Text and graphics for website|Content as per visitor's requirements|Too short or too long content|All of these",1],
+["m","Who provides a trial version of the software for free download?","Editor|Vendor|Visitor|None",1],
+["m","The visual diagram of the website is known as ____.","Site Map|Image Map|Site Editor|Site Browser",0],
+["m","The website should be classified into ____ categories.","General|Detailed|Simple|Both a and b",3],
+["m","What is the first step for planning a website?","Homepage|Target audience|Objective and Goal|Browser compatibility",2],
+["m","The website must contain ____ information.","Complete|relevant|incomplete|Both a and b",3],
+["m","What is the key point of a website?","Content|Homepage|Objective and Goal|Browser Compatibility",0],
+["m","Which type of content provides an overview of the site, organization, products and services?","Complete|relevant|Detailed|General",3],
+["m","Which type of content provides users with detailed information on the site, like products and services descriptions?","Complete|relevant|Detailed|General",2],
+["m","What is a valuable tool for business and other organizations when composed of the right content?","Webpage|Web server|Website|Webhost",2],
+["m","Which menu option is used to insert a table in a web page?","Insert → Table|Edit → Table|Table → Insert → Table|Both a and c",0],
+["m","The default file name of a webpage is ____ when the user types a URL without the filename.","index|index.html|file.html|new.html",1],
+["m","____ option is used to specify the gap between cells of a table in KompoZer.","Spacing|Padding|Gapping|Size",0],
+["m","Which tabs are available in the Insert Table dialog box?","Quickly|Precisely|Cell|All of these",3],
+["m","____ properties option is used to change the background color of the inserted table.","Table Cell|Page color|text color|Background",0],
+["m","Which menu option is used to publish a website created in KompoZer?","File → Publish|Edit → Publish|Tools → Publish|Format → Publish",0],
+["m","In table properties, which option is used to specify the gap between the cell border and content?","Spacing|Padding|Border|Caption",1],
+["m","Which of the following statements are true related to website designing? i) The website must contain complete and relevant information. ii) The website contents are in detailed. iii) The website design should scale for all devices. iv) Expected users are least important. v) Design the complex navigation for website.","i, ii & v|ii, iii & v|i & iii|i, ii & iii",2],
+["m","Publishing server details are provided by ____ or the web host where we have purchased the space.","Proxy Server|ISP|URL|FTP",1],
+["m","Which label is used to give a caption to a table from the table properties dialog box?","caption|name|title|file",0],
+["m","In a table, height and width can be specified in ____ of the window.","only pixels|only %|pixels or % of the window|points",2],
+["m","Which menu option is used to insert an image on a web page?","Insert → Image|Edit → Image|Format → Image|Image",0],
+["m","Which menu option is used to insert a horizontal line on a webpage?","Insert → Horizontal Line|Edit → Horizontal|Insert → Horizontal|File → Horizontal line",0],
+["m","In KompoZer, if the user wants to change the page title, which option is used?","Format → Page Title and Properties|Insert → Page Title and Properties|Inset → page title|Edit → Page Title and Properties",0],
+["m","Which menu option is used to change the color of the text in KompoZer?","Format → Text color|Format → font color|Insert → Font color|Font color",0],
+["m","In JavaScript, each of the details is separated with which delimiter?","“,” (comma)|“;” (semicolon)|;|*",1],
+["m","In JavaScript, individual product descriptions are separated with which delimiter?","“:” (colon)|“,” (comma)|;|*",1],
+["m","JavaScript can manipulate cookies using the ____ property of the document object.","cookie|variable|function|css",0],
+["m","Cookies can be ____.","read, created|modified|deleted|All of these",3],
+["m","To convert data into a number, use the function ____.","parseFloat()|parseInt()|NaN()|Both a and b",3],
+["m","Which protocol is used to transfer web pages from our computer to the web host?","FTP|HTTP|ASP|HTML",0],
+["m","Which web development tool provides language support for HTML, CSS, JavaScript, Ruby, Rails, PHP etc.?","BlueGriffon|Aptana studio|Amaya|W3C",1],
+["m","Which web development tool supports languages like English, Dutch, German, Chinese etc.?","Aptana studio|BlueGriffon|Amaya|W3C",1],
+["m","Which is a free open source WYSIWYG HTML editor?","Aptana studio|BlueGriffon|Amaya|W3C",1],
+["m","Which is a powerful open source IDE for building web applications?","Aptana studio|BlueGriffon|Amaya|W3C",0],
+["m","Which is a free open source WYSIWYG web editor developed by the World Wide Web Consortium (W3C)?","Aptana studio|BlueGriffon|Amaya|W3C",2],
+["m","Which web editor was initially started as an HTML / CSS editor and has now grown into an editor for many XML-based systems?","Aptana studio|BlueGriffon|Amaya|W3C",2],
+["m","What means transferring the site, i.e. the pages, images and stylesheets, to a web server from where they can be accessed by users?","Publishing a website|Downloading a website|uploading website|None",0],
+["m","Which table tab shows the number of rows, columns, and the height and width of the table?","General|Size|alignment|caption",1],
+["m","Which tab is used to change the height and width of the image from the Image properties dialog box?","Location|Dimensions|Appearance|Link",1],
+["m","Which menu option is used to give a link on an image or text in a webpage?","Insert → Link|Edit → Link|Format → Link|Tools → link",0],
+["m","Which of the following are other free open source web development IDE software?","Aptana studio|Blue Griffon|Amaya|All of these",3],
+["m","Which of the following statements are true related to website designing? i) The website must contain complete and relevant information. ii) The website contents are in detailed. iii) The website design should scale for all devices. iv) Expected users are least important. v) Design the complex navigation for website.","i, ii & v|ii, iii & v|i & iii|i, ii & iii",2],
+["m","Which of the following tabs are viewed when the user inserts a table in KompoZer?","Quickly, Pure, Cell|Quickly, Precisely, Cell|Quickly, Private, Cell|Quickly, Prefect, Cell",1],
+["m","Which of the following helps in promoting the business, selling the products and attracting a large number of customers?","Website|Webpage|Form|CSS",0],
+["m","Which of the following is not an important point to be considered for developing a good website as part of the planning process?","Purpose|Audience|Content|Input",3],
+["m","Which of the following information should a website contain?","Complete, Relevant|Complete, Irrelevant|Incomplete, Irrelevant|Incomplete, Relevant",0],
+["m","Which of the following content provides an overview of the site, organization, products and services, and other items?","Detailed|Long|General|Short",2],
+["m","Which of the following is a collection of interlinked web pages?","Webpage|Form|Kompozer|Website",3],
+["m","Which of the following is the first page that opens when the user enters the URL in the address bar of the browser?","Home page|Last page|Webpage|First page",0],
+["m","Which of the following is the home page file name of a website?","First.html|index.html|home.html|one.html",1],
+["m","Which of the following is a variable that is stored on the user's computer?","Integer|HTML|cookie|Java",2],
+["m","Which of the following stands for FTP?","File Truncate Protocol|File Transfer Process|Fine Tune Protocol|File Transfer Protocol",3],
+["f","Full form of ISP?","Internet Service Provider"],
+["f","Full form of URL?","Universal Resource Locator/Uniform Resource Locator"],
+["f","Full form of IDE?","Integrated Development Environment"],
+["f","Full form of FTP?","File Transfer Protocol"],
+["f","Full form of W3C?","World Wide Web Consortium"],
+["f","Full form of XML?","Extensible Markup Language"]
+];
+const D5=[
+["m","Mobile commerce is also known as ____.","M-commerce|M- com|M-COM|E-commerce",0],
+["m","M-commerce provides the user with the advantage of ____.","flexibility|ubiquity|Authority|Both a and b",3],
+["m","Banks allow their customers to access account balance, stock quotes etc. via mobile phones. These services are known as ____.","mobile Banking|M-Banking|Banking|Both a or b",3],
+["m","The stock market services offered via mobile devices are known as ____.","Mobile Brokerage|M-Brokerage|Brokerage|E-com",0],
+["m","Mobile devices have limited computing ____ type of capacity.","power|memory|storage|All of these",3],
+["m","Give some examples of entertainment services which can cater to a large number of mobile users.","Pay-per-download|pay-per-event|on subscription basis|All of these",3],
+["m","The application of Union Bank of India is known as ____ in the Android market.","umobile|unionmobile|unomobile|All of these",1],
+["m","With more and more wireless handheld devices, there are significant opportunities for the growth of which type of sector?","M-commerce|Banking|E-commerce|Commerce",0],
+["m","Location-based searching is known as ____.","M-commerce|L-commerce|E-commerce|Traditional com",1],
+["m","Which is the most accurate in determining a mobile device's position?","GPRS|GPS|GPR|GSPR",1],
+["m","To locate a point, GPS uses how many satellites to create an intersecting point?","4|3|2|1",0],
+["m","To locate a mobile, GPS uses 3 satellites. This technology is known as ____.","Interrelationship|Triangulation|angulation|Angle",1],
+["m","If the GPS signal is weak or blocked, the mobile device can use the signal from whom?","cell towers|Wi-Fi hot spots|Broadband|Both a and b",3],
+["m","Using which technologies do location-based services track the user's current location?","GPS|Map|Single|GPRS",0],
+["m","On maps, the current location of the user is indicated by which colour pointer?","Blue|Red|Green|Yellow",0],
+["m","At the time of payment in M-commerce, which information is transmitted to the merchant server?","Credit card number|personal details|Id number|Both a and b",3],
+["m","From which does the merchant server send the user's information to the issuing bank for authorization?","Payment gateway|Process gateway|progress|None of these",0],
+["m","How many important aspects are there for the security of E-commerce or M-commerce websites?","1|2|4|3",2],
+["m","____ protects the data from private attacks and ensures that the message is not revealed or leaked to anyone as it travels to the destination.","Confidentiality|Integrity|Authorization|Non-repudiation",0],
+["m","Which helps in protecting confidential data like credit card numbers?","Integrity|Confidentiality|Authorization|Non-repudiation",1],
+["m","Which ensures that the receiver receives the same message as was sent by the sender?","Integrity|Confidentiality|Authorization|Non-repudiation",0],
+["m","____ ensures that only authentic users are allowed to use the system. Login and password is one way to achieve it.","Integrity|Confidentiality|Authorization|Non-repudiation",2],
+["m","____ is usually accomplished via digital signatures or a Trusted Third Party.","Integrity|Confidentiality|Authorization|Non-repudiation",3],
+["m","____ code is one that causes damage to a computer or system.","Malicious|D-code|Code|De-code",0],
+["m","Which code can either activate itself or be like a virus requiring a user to perform an action?","Cyber|Malicious|D-code|De-code",1],
+["m","Which program is like tapping the telephone wire and recording the conversation?","sniffer|DoS|Spoofing|Cyber vandalism",0],
+["m","In which are users flooded with thousands of messages that create traffic problems on the network?","Sniffer|Denial of service attack|Spoofing|Cyber vandalism",1],
+["m","In which an attacker replaces the website's original content with his or her own content?","Cyber vandalism|Spoofing|Spoofing|Cyber vandalism",0],
+["m","____ is an example of an integrity violation.","Cyber vandalism|Sniffer|Spoofing|De-code",0],
+["m","In which can an attacker create a fake website?","Sniffer|Spoofing|Cyber vandalism|De-code",1],
+["m","In spoofing, all the user's visits to the real site are redirected to the fake website.","Sniffer|Spoofing|Cyber vandalism|De-code",1],
+["m","Once a system is infected by ____, it spreads by attaching to other programs and files.","Virus|De-code|Coding|Language",0],
+["m","____ spread to other systems by taking control of the user's email and sending out copies of itself to those in the user's contacts list.","Virus|De-code|Coding|Language",0],
+["m","The most commonly used network protection barrier between the company's network and the outside world is a ____.","Firewall|Anti virus|Virus|Worm",0],
+["m","____ is a device placed between the network and the Internet to monitor and control the traffic between the company's LAN and the outside world.","Firewall|Anti virus|Cyber|CPU",0],
+["m","With a ____, we can assure business organizations, online services and friends that the electronic information they receive from us is authentic.","certificate|Digital Certificate|water mark|Secret key",1],
+["m","The third party who issues certificates is known as a ____.","Certification Authority (CA)|Certificate|Certification Author|Author",0],
+["m","Which is used to encrypt and decrypt a message?","Secret key|Firewall|Antivirus|Code",0],
+["m","Which protocol provides authentication of the merchant or shopper using a digital certificate?","IDE|SSL|FSL|SET",3],
+["m","Which protocol is used for securing web transactions on the internet?","IDE|SSL|FSL|SET",1],
+["m","Which company developed the SSL protocol?","Netscape|Apple|FSL|SET",0],
+["m","The secured site address starts with ____.","https://|http://|http//|ftps://",0],
+["m","Which of the following are included in intellectual property?","Books, software's|music, video, copyrights|trademarks and web pages|All of these",3],
+["m","Copying contents from a website comes under which law?","Copyright law|IT law|Law|Sniffer Law",0],
+["m","Already registered domain names sold to the concerned company at a very high price is known as ____.","Cyber squatting|Cyber Sniffer|Cyber Spoofing|Cyber certificate",0],
+["m","The invisible embedded ____ helps to identify the owner of the work.","watermark|Trade mark|Digital mark|Verisign",0],
+["m","In the field of data security, what can be used for certification and authentication?","Watermark|Trademark|Digital mark|Verisign",2],
+["m","A visible digital watermark can be added to any image using ____ tools.","photo editor|Authoring|Animation|Text editor",0],
+["m","In traditional payment methods, we make payments using ____.","cash|cheque|credit card|All of these",3],
+["m","Payment cards can be classified as ____.","Credit card|Debit card|Smart card|All of these",3],
+["m","For accepting payments on websites through credit card, a merchant needs to open which account?","Payment account|Merchant account|Saving account|recurring",1],
+["m","What is the bank that opens a merchant account called?","Acquiring bank|Authoring bank|Private bank|Government bank",0],
+["m","What is the process of verifying whether the card is active or other customer details called?","Authentication|Authorization|Integration|Non-repudiation",1],
+["m","Payment gateways are services provided by third parties like ____.","PayPal|Payment|PalPay|PayU",0],
+["m","The online payment through credit card on the Internet is divided into ____ parts.","Authorization|Settlement|Processors|Both a and b",3],
+["m","How many entities play an important role in online payment?","gateways|Processors|Authorization|Both a and b",3],
+["m","Through what are the processors connected to the E-Commerce website of the merchant?","Payment gateway|Payment PayPal|PayPal|Settlement",0],
+["m","Which security system do credit card companies use to make online transactions secure?","SSL|SET|FTP|HTTP",1],
+["m","Which type of card transfers funds directly from the consumer's bank account to the merchant?","Debit card|Credit card|Smart card|Payment card",0],
+["m","Which card stores 100 times more information than normal cards?","Smart card|Debit cards|Credit card|RuPay card",0],
+["m","Which entities are data centres which perform the credit card transaction and settle funds to the merchant?","Processors|Payment gate way|Process|Authentication",0],
+["m","Which entity passes the information to the processor, which contacts the issuing bank for verification of the information?","Payment gateway|Payment PayPal|Processor|Authentication",0],
+["m","Which entity sends the payment details to the issuing bank of the customer?","Processors|Payment gate way|Process|Authentication",0],
+["m","Which card has a microchip embedded in its surface?","Smart card|Debit card|Credit card|Charge card",0],
+["m","Which card does not carry any spending limit?","Smart card|Debit card|Credit card|Charge card",3],
+["m","Which means transferring money from one bank account to another electronically?","EFT|Net banking|SET|NFT",0],
+["m","In which card is the customer not required to provide the credit or debit card number while making a payment?","E-wallet|Net Banking|Manual banking|PayPal",0],
+["m","Which card payment mechanism was launched by NPCI (National Payments Corporation of India)?","RuPay|Credit card|Debit card|Smart card",0],
+["m","Who launched the E-wallet scheme for customers to make online booking easier?","IRCTC|State Bank of India|Airways|Charge Card",0],
+["m","Which of the following is the transformation of encrypted text back into normal text?","Decryption|Digital Certificate|Firewall|Virus",0],
+["m","Which security system is used by major credit card companies to make online transactions secure?","Secure Electronic Transfer|Portable Electronic Transfer|General Electronic Transfer|Cash Electronic Transfer",0],
+["m","Which of the following refers to buying and selling of goods or services through the use of Internet-enabled wireless devices?","M-Commerce|Internet|M-banking|WWW",0],
+["m","Which of the following technologies provides location information for business purposes?","E-commerce|M-commerce|L-Commerce|Traditional Commerce",2],
+["m","Which of the following stands for GPS?","Global Positioning System|Global Postal System|Grand Positioning System|Google Positioning System",0],
+["m","Which security aspect refers to the secrecy of information so that unauthorized users cannot read it?","Confidentiality|Integrity|Non-repudiation|Authorization",0],
+["m","Which security aspect ensures that information is not accidentally or maliciously altered or tampered with in transit?","Integrity|Integrity|Non-repudiation|Authorization",0],
+["m","Which security aspect ensures that only authentic users are allowed to use the system?","Integrity|Integrity|Non-repudiation|Authorization",3],
+["m","Which security aspect ensures that the sender of a message cannot deny that he or she has sent it?","Integrity|Integrity|Non-repudiation|Authorization",2],
+["m","Which program uses the Internet to record information that passes through a computer or router in transit from sender to receiver?","Sniffer|Denial of service attack|Malicious code|Spoofing",0],
+["m","Which attack is used to shut down a machine or network, making it inaccessible to its intended users?","Malicious code|Denial-of-Service|Spoofing|Cyber Vandalism",1],
+["m","Which is known as electronic defacing of existing website pages?","Cyber Vandalism|Denial-of-service|spoofing|Malicious code",0],
+["m","Which is pretending to be someone you are not, or representing a website as authentic when it is actually fake?","Spoofing|Malicious code|Cyber vandalism|Denial-of-service",0],
+["m","Which is a computer program that detects, prevents and takes action to remove malicious codes like viruses, worms and Trojan horses from an infected system?","Antivirus software|Digital certificate|Firewall|Cryptography",0],
+["m","Which is the transformation of normal text known as plain text into unreadable or secret text known as cipher text, using an encryption algorithm?","Encryption|Firewall|Antivirus software|Digital certificate",0],
+["m","Which is the transformation of encrypted text back into normal text?","Decryption|Firewall|Digital certificate|Virus",0],
+["m","Which protocol is used for securing web transactions on the Internet?","TCP/IP|HTTP|SET|SSL",3],
+["m","Who developed the SSL protocol?","Google|Netscape|Yahoo|Firefox",1],
+["m","Which starting address indicates that a site is secure by SSL protocol?","http://|ssl://|https://|http-ssl://",2],
+["m","Which provides the author with a tool to protect his or her original work from being used or taken by others without permission?","Trademark|Copyright|Digital Watermarking|Steganography",2],
+["m","Which is a specific logo, mark, word, symbol, design, phrase or image used by an individual or company to distinguish a product or service from that of others in the market?","Trademark|Copyright|Digital watermarking|Steganography",0],
+["m","Which is the symbol for trademark?","TM, MT, ©|TM, SM, and ®|TM, MS and ®|TM, S< and ( C )",1],
+["m","Which is the process of hiding information within other information?","Squatting|Steganography|Name changing|Copyright",1],
+["m","Which is a digital code inserted into a digital image, audio or video file that can identify the file's copyright information?","Image mark|Digital Mark|Code mark|Water mark",3],
+["m","Who issues the credit card and guarantees payment to the merchant?","Merchant|Issuing Bank|Acquiring bank|Customer",1],
+["m","Which payment card has a microchip embedded in its surface?","Smart Card|Debit card|Credit card|Charge card",0],
+["f","Full form of SET?","Secure Electronic Transfer"],
+["f","Full form of EFT?","Electronic Funds Transfer"],
+["f","Full form of NPCI?","National Payments Corporation of India"],
+["f","Full form of PDA?","Personal Digital Assistant"],
+["f","Full form of ATM?","Automatic Teller Machine"],
+["f","Full form of SSL?","Secure Socket Layer"],
+["f","Full form of CA?","Certification Authority"],
+["f","Full form of DoS?","Denial-of-Service/Denial of Service"],
+["f","Full form of TTP?","Trusted Third Party"],
+["f","Full form of GPS?","Global Positioning System"],
+["f","Full form of IRCTC?","Indian Railway Catering And Tourism Corporation Limited"],
+["f","Full form of TM?","Trade Mark/Trademark"],
+["f","Full form of SM?","Service Mark"]
+];
+const D6=[
+["m","In which year was object-oriented programming started?","1960|1970|1966|1980",2],
+["m","Which popular programming languages support object-oriented programming?","C++, Java|C#, VB.net|ASP.net, PHP|All of these",3],
+["m","Programming can be divided into ____ categories.","structure / procedural|object-oriented|Markup language|both a and b",3],
+["m","In which programming is the focus on writing functions or procedures which operate on data?","Procedural|Object-oriented|Markup|Makeup",0],
+["m","In which programming is the focus on objects containing both data and functionality together?","Procedural|Object-oriented|Markup|Makeup",1],
+["m","Which programming approach enables the programmer to create modular, reusable and expandable code?","Procedural|Object-oriented|Markup|Makeup",1],
+["m","Object-oriented programming uses ____ as its fundamental building block.","object|class|Row|Table",0],
+["m","In the real world, which of the following are the entities of which the world is comprised?","object|class|Row|Table",0],
+["m","In object-oriented terminology, characteristics are known as ____.","properties|attributes|entity|both a or b",3],
+["m","To identify objects, we use the values of the attributes. These values are called ____.","State|class|behavior|object",0],
+["m","There is always a behavior associated with ____.","State|class|behavior|object",3],
+["m","The behavior is also known as ____.","State|class|behavior|method",3],
+["m","Any real-world object can be described in terms of ____.","What it is called (identity)|What it is (its state [value])|What it does (its behavior)|All of these",3],
+["m","____ can be considered a blueprint for various objects.","State|class|behavior|object",1],
+["m","A ____ is a template for multiple objects with similar features.","State|class|behavior|object",1],
+["m","A ____ also describes a group of objects with similar attributes and common behavior.","State|class|behavior|object",1],
+["m","A class is a concept used to embody all the common features of a particular set of ____.","State|class|behavior|object",3],
+["m","What presents a collection of classes, constraints and relationships among classes?","Class diagram|Object diagram|Oriented diagram|Table diagram",0],
+["m","Which model can be used to create models of object-oriented software to help with the design of an application?","GML|UML|HML|MUL",1],
+["m","What is a visual modeling language defined and maintained by the OMG?","UML|XML|GML|HML",0],
+["m","What specifies several diagrams for representing different aspects of a software application?","UML|XML|GML|HML",0],
+["m","The purpose of the class diagram is to model the ____ view of an application.","Static|dynamic|Random|Linear",0],
+["m","Which diagrams are the only diagrams that can be directly mapped with object-oriented languages?","class diagrams|Object diagram|Oriented diagram|Table diagram",0],
+["m","In a class diagram, a class is represented with an icon using a rectangle split into how many sections?","1|2|3|4",2],
+["m","In a class diagram, a class is represented with an icon using a rectangle in how many sections?","name|attributes|behavior|All of these",3],
+["m","The three sections of a class diagram are: 1. Name of the class in the top section 2. Attributes or properties of the class in the middle section 3. Behavior or operations or methods of the class in the bottom section","Name of the class in the top section|Attributes or properties in the middle section|Behavior or operations in the bottom section|All of these",3],
+["f","In UML notation, an attribute is declared using the following syntax: [<visibility>] <attribute name> [:<attribute data type> [=<initial value>]]","[<visibility>] <attribute name> [:<attribute data type> [=<initial value>]]"],
+["m","In an attribute declaration, the ____ brackets are optional.","square [ ]|circle ( )|angular < >|Curly { }",0],
+["m","In an attribute declaration, the value should be specified in ____ brackets.","square [ ]|circle ( )|angular < >|Curly { }",0],
+["m","In an attribute declaration, the visibility can be classified into ____.","private|protected, public|package|All of these",3],
+["m","Which symbol is used for private visibility?","# (Hash)|- (Dash)|+ (Plus)|~ (Tilde)",1],
+["m","Which symbol is used for protected visibility?","# (Hash)|- (Dash)|+ (Plus)|~ (Tilde)",0],
+["m","Which symbol is used for public visibility?","# (Hash)|- (Dash)|+ (Plus)|~ (Tilde)",2],
+["m","Which symbol is used for package visibility?","# (Hash)|- (Dash)|+ (Plus)|~ (Tilde)",3],
+["m","____ generally refers to a variable.","class|Attributes|state|behavior",1],
+["m","____ identify the type of data stored and its value at the start of the program.","Data type|initial value|default value|Both a and b",3],
+["m","____ is mandatory and all other items are optional in attribute declaration notation.","class|Attribute - Name|state|behavior",1],
+["f","In UML notation, an operation is declared using the following syntax: [<visibility>] <method name> (parameter list separated by comma) : <return data type>","[<visibility>] <method name> (parameter list separated by comma) : <return data type>"],
+["m","Which diagrams are independent of the programming language used for coding an application?","UML diagram|Class Diagram|Object Diagram|None",0],
+["m","____ are presented using their state during the execution of an application.","Objects|class|Attributes|State",0],
+["m","Objects are ____.","Dynamic|Static|Linear|Random",0],
+["m","In object-oriented programming, the problem of modification can be solved using ____.","Encapsulation|Aggregation|Messaging|Polymorphism",0],
+["m","How many core elements are there in a computer program?","data|element|Attributes|Both a and b",3],
+["m","The mechanism of providing protection to data and methods of a program is called ____.","Encapsulation|Aggregation|Messaging|Polymorphism",0],
+["m","What is possible by wrapping data and methods into a single unit class and declaring them as private?","Encapsulation|Aggregation|Messaging|Polymorphism",0],
+["m","Which members of a class are not available directly to the outside world?","Private|Protected|Public|Package",0],
+["m","Encapsulation provides ____ hiding capability.","data|information|Table|All of these",0],
+["m","____ keeps the data safe from unintended actions and inadvertent access by outside objects.","Encapsulation|Aggregation|Messaging|Polymorphism",0],
+["m","What is the process of representing the essential features of objects without including implementation details?","Encapsulation|Data abstraction|Data Messaging|Polymorphism",1],
+["m","____ is a concept that hides the complexity; it says what it does.","Encapsulation|Data abstraction|Data Messaging|Polymorphism",1],
+["m","Which technique relies on the separation of interfaces and implementation, and is not a new concept in programming?","Encapsulation|Data abstraction|Data Messaging|Polymorphism",1],
+["m","A user-defined function with necessary input data parameters also provides ____.","Encapsulation|Data abstraction|Data Messaging|Polymorphism",1],
+["m","____ provides the skeleton or templates for our use. The system hides certain details of how data is stored, created and maintained.","Encapsulation|Data abstraction|Data Messaging|Polymorphism",1],
+["m","Which are examples of data abstraction?","ADT or structures (Struct) in C / C++|classes in C++ / JAVA|JavaScript|Both a and b",3],
+["m","In ____, we simply define a data type and a set of operations on it, but the implementation of the operations is not seen.","ADT|UML|HML|XML",0],
+["m","In object-oriented terminology, a call to a method is referred to as a ____.","Message|class|Attributes|State",0],
+["m","Which term means many forms, which may be different forms of a single method or operation?","Encapsulation|Aggregation|Messaging|Polymorphism",3],
+["m","Object-oriented programming allows defining more than one method with the same name but different signatures (number and type of parameters) in a single class. This feature is known as ____.","Method overloading|Inheritance|Data Messaging|Method Overriding",0],
+["m","In how many types is overloading achieved by polymorphism?","function overloading|operator overloading|Inheritance|Both a and b",3],
+["m","The capability of using the same names to mean different things in different contexts is called ____.","Method overloading|Inheritance|Data Messaging|Method Overriding",0],
+["m","When objects of one class are composed of objects of other classes, it is called ____.","aggregation|composition|Encapsulation|Both a or b",3],
+["m","Aggregation represents ____ type of relationship between classes.","'has-a'|'a-part-of'|'a-kind-of'|Both a or b",3],
+["m","Aggregation represents ____ relationship between two classes.","non-exclusive|exclusive|Strong|Simple",0],
+["m","In ____, the class that forms part of the owner class can exist independently.","aggregation|Composition|Inheritance|Polymorphism",0],
+["m","Basic aggregation is represented using an ____ symbol next to the whole class.","empty diamond|Filled diamond|empty circle|filled circle",0],
+["m","Composition represents ____ relationship between two classes.","non-exclusive|exclusive|Strong|Simple",1],
+["m","____ is a strong type of aggregation where the lifetime of the part class depends on the existence of the owner class.","aggregation|Composition|Inheritance|Polymorphism",1],
+["m","If an object of an aggregating class is ____, its part class object also gets deleted.","deleted|updated|appended|modified",0],
+["m","Inheritance is generally referred to as ____ relationship between two classes.","is-a-kind-of|is-a-part-of|has-a|like-a",0],
+["m","____ refers to the capability of defining a new class of objects that inherits the characteristics of another existing class.","polymorphism|Inheritance|Aggregation|Composition",1],
+["m","In inheritance (object-oriented) terminology, the new class is called ____.","sub class|child class|derived class|All of these",3],
+["m","In inheritance (object-oriented) terminology, the existing class is called ____.","super class|parents class|base class|All of these",3],
+["m","In a class diagram, inheritance is represented using an ____ pointing to the superclass.","arrow|diamond|circle|dash",0],
+["m","____ is another name for inheritance or the 'is a' relationship.","Generalization|Polymorphism|Aggregation|Composition",0],
+["m","____ refers to a relationship between two classes where one class is a specialized version of another.","Generalization|Polymorphism|Aggregation|Composition",0],
+["m","In inheritance, common attributes and methods are defined in the ____ class.","sub|Super|sub, super|public",1],
+["m","When a class is derived from two or more classes, it is known as ____ type of inheritance.","multiple|single|multi level|Both a and b",0],
+["m","In the ____ feature, classes do not inherit from other classes, but are 'composed of' other classes.","Aggregation|composition|polymorphism|Inheritance",1],
+["m","In a class diagram, composition is represented using which of the following symbols?","Empty diamond|Filled diamond|Empty triangle|Filled triangle",1],
+["m","Which of the following is not a visibility symbol?","# (hash)|* (star)|~ (tilde)|- (dash)",1],
+["m","Which concept hides the complexity; it says what it does, but not how it is done?","Abstraction|Polymorphism|Message|Data",0],
+["m","Which can be used to create models of object-oriented software to help with the design of an application?","Unified Maseup language|Unified markup language|Unified modeling language|Unified morphing language",2],
+["m","What is the full form of JVM?","Java Varity Machine|Java Vertical Machine|Java Virtual Machine|Java Visual Machine",2],
+["m","In Java, what keeps the data safe from unintended actions and inadvertent access by outside objects?","Data-abstraction|Polymorphism|Encapsulation|Aggregation",2],
+["m","In a class diagram, a class is represented with an icon using a rectangle split into how many sections?","2|3|4|6",1],
+["m","Aggregation represents which type of relationship between two classes?","non-exclusive|exclusive|same|None of the above",0],
+["m","In object-oriented methodology, the focus is on which of the following entities?","Data|Functions|Objects|All of the above",2],
+["m","Which of the following best suits Java?","A procedural programming language|An object-oriented programming language|A query language|All of the above",1],
+["m","Which of the following is used to distinguish objects from each other?","attribute|state|Behavior|All of the above",0],
+["m","Which of the following is used to define common features of similar objects?","class|object|method|All of the above",0],
+["m","Which of the following is not a visibility symbol?","~ (tilde)|* (star)|# (hash)|- (dash)",1],
+["m","Which of the following is enabled by data abstraction?","data protection|To hide implementation details of methods manipulating the data|data sharing|All of these",1],
+["m","Which of the following is provided using encapsulation?","Data protection|Data sharing|Separation of data and methods|All of these",3],
+["m","With which of the following options can polymorphism not be achieved?","Data hiding|operator overloading|Method Overloading|All of these",0],
+["m","An aggregation model refers to which of the following relationships?","'is-a' relationship|'a-part-of' relationship|'is-like' relationship|All of these",1],
+["m","An inheritance model refers to which of the following relationships?","'is-a' relationship|'has-a' relationship|'a-part-of' relationship|All of these",0],
+["m","In a class diagram, composition is represented using which of the following symbols?","empty diamond|Filled diamond|Empty triangle symbol|all of these",1],
+["f","Full form of UML?","Unified Modeling Language"],
+["f","Full form of OMG?","Object Management Group"],
+["f","Full form of ADT?","Abstract Data Types/Abstract Data Type"]
+];
+const CHAPTERS={
+  1:{title:'Creating HTML Forms using KompoZer',rows:D},
+  2:{title:'Cascading Style Sheets and Java Script',rows:D2},
+  3:{title:'Designing Simple Website Using KompoZer',rows:D3},
+  4:{title:'',rows:null},
+  5:{title:'Introduction to M-Commerce',rows:D5},
+  6:{title:'Object-Oriented Concepts',rows:D6}
+};
+const isAvail=n=>!!(CHAPTERS[n].rows&&CHAPTERS[n].rows.length);
+let items=[],order=[],idx=0,view='start',sel=1;
+
+function renderMenu(){
+  if(view==='start'){
+    app.innerHTML=`<div class="card"><div class="q" style="margin:4px 0 6px">Select Chapter</div>
+      <div class="muted">Chapters marked Not Available have no questions added yet.</div>
+      ${[1,2,3,4,5,6].map(n=>`<button class="opt" onclick="pickChapter(${n})"><b>Chapter ${n}</b><br><span class="st ${isAvail(n)?'y':'n'}">${isAvail(n)?'Available':'Not Available'}</span></button>`).join('')}
+      <div id="cmsg"></div></div>`;
+    return;
+  }
+  const c=CHAPTERS[sel];
+  app.innerHTML=`<div class="card"><div class="muted">Selected chapter</div>
+      <div class="q" style="margin:4px 0 12px"><b>Chapter ${sel}</b>${c.title?' · '+esc(c.title):''}</div>
+      <div class="row" style="margin-top:0"><button class="btn" onclick="start(false)">Start in Order</button><button class="btn" onclick="start(true)">Shuffle and Start</button></div>
+      <div class="row"><button class="btn sec" onclick="view='start';render()">← Chapters</button></div></div>`;
+}
+function pickChapter(n){
+  if(!isAvail(n)){
+    $('cmsg').innerHTML=`<div class="fb bad">Chapter ${n} is not available. Its questions have not been added yet.</div>`;
+    return;
+  }
+  sel=n;view='options';render();
+}
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm=s=>String(s).trim().replace(/\s+/g,' ').toLowerCase();
+const sh=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const cur=()=>items[order[idx]];
+const PRAISE=['Well done!','Nice work!','Spot on!','Great, keep going!'];
+
+// Build question objects. Options are shuffled while the correct answer text is tracked,
+// so the answer always follows its option. Options that refer to other positions
+// ("above", "both", "none") are never shuffled, since their meaning depends on position.
+function mk(rows){
+  return rows.map((r,i)=>{
+    const [t,q,o,a]=r;
+    const it={n:i+1,t,q,given:null,ok:null};
+    if(t==='m'){
+      const arr=o.split('|');
+      it.correct=arr[a];
+      it.opts=/above|both|none/i.test(o)?arr:sh(arr);
+    }else{
+      it.correct=o.split('/')[0];
+      it.alts=o.split('/').map(norm);
+    }
+    return it;
+  });
+}
+function start(shuffle){
+  items=mk(CHAPTERS[sel].rows);
+  order=shuffle?sh(items.map((_,i)=>i)):items.map((_,i)=>i);
+  idx=0;view='quiz';render();
+}
+function retryWrong(){
+  const wrong=items.filter(x=>x.ok===false).map(x=>({...x,given:null,ok:null}));
+  items=wrong;order=sh(items.map((_,i)=>i));idx=0;view='quiz';render();
+}
+function pick(k){
+  const it=cur();if(it.ok!==null)return;
+  it.given=it.opts[k];it.ok=it.given===it.correct;render();
+}
+function submitFill(){
+  const it=cur();if(it.ok!==null)return;
+  const v=$('fi').value;if(!v.trim())return;
+  it.given=v;it.ok=it.alts.includes(norm(v));render();
+}
+function next(){
+  if(idx<order.length-1){idx++;render()}else{view='results';render()}
+}
+function prev(){if(idx>0){idx--;render()}}
+function go(i){idx=i;view='quiz';render();window.scrollTo(0,0)}
+
+function fb(it){
+  if(it.ok===true)return `<div class="fb ok">✓ ${PRAISE[it.n%PRAISE.length]} <br>Correct Answer: ${esc(it.correct)}</div>`;
+  return `<div class="fb bad">✗ Incorrect. <br>Correct Answer: ${esc(it.correct)}</div>`;
+}
+
+function render(){
+  const app=$('app');
+  if(view==='start'||view==='options'){
+    renderMenu();
+    return;
+  }
+  const N=items.length;
+  const answered=items.filter(x=>x.ok!==null).length;
+  const c=items.filter(x=>x.ok===true).length;
+  const w=answered-c;
+  if(view==='results'){
+    const pct=Math.round(c/N*100);
+    const wrong=items.filter(x=>x.ok===false);
+    app.innerHTML=`<div class="card">
+      <div class="muted">Final Result</div>
+      <div class="big">${c}/${N}</div>
+      <div>${pct}%</div>
+      <div class="sum">
+        <div>Total questions<b>${N}</b></div>
+        <div>Correct<b>${c}</b></div>
+        <div>Incorrect<b>${w}</b></div>
+        <div>Unanswered<b>${N-answered}</b></div>
+      </div>
+      <div class="row">
+        ${wrong.length?`<button class="btn" onclick="retryWrong()">Retry incorrect (${wrong.length})</button>`:''}
+        <button class="btn sec" onclick="start(true)">Reshuffle &amp; restart</button>
+        <button class="btn sec" onclick="go(0)">Review answers</button>
+        <button class="btn sec" onclick="view='start';render()">Chapters</button>
+      </div>
+    </div>
+    ${wrong.length?`<div class="card"><b>Questions answered incorrectly</b>${wrong.map(x=>`<div class="wrong"><b>Q${x.n}.</b> ${esc(x.q)}<br>Your answer: ${esc(x.given)}<br>Correct answer: ${esc(x.correct)}</div>`).join('')}</div>`:'<div class="card">Every answered question was correct.</div>'}`;
+    return;
+  }
+  const it=cur();
+  const pct=Math.round(answered/N*100);
+  let body='';
+  if(it.t==='m'){
+    body=it.opts.map((o,k)=>{
+      let cls='opt';
+      if(it.ok!==null){if(o===it.correct)cls+=' ok';else if(o===it.given)cls+=' bad';}
+      return `<button class="${cls}" ${it.ok!==null?'disabled':''} onclick="pick(${k})">${esc(o)}</button>`;
+    }).join('');
+  }else{
+    const cls=it.ok===null?'':(it.ok?' ok':' bad');
+    body=`<input id="fi" class="fill${cls}" type="text" placeholder="Type your answer" autocomplete="off" autocapitalize="off" ${it.ok!==null?'disabled':''} value="${it.given!==null?esc(it.given):''}" onkeydown="if(event.key==='Enter')submitFill()">
+      ${it.ok===null?`<div class="row"><button class="btn" onclick="submitFill()">Submit</button></div>`:''}`;
+  }
+  const feedback=it.ok===null?'':fb(it);
+  const grid=order.map((oi,p)=>{
+    const x=items[oi];
+    let cls='dot';
+    if(x.ok===true)cls+=' okd';else if(x.ok===false)cls+=' bd';
+    if(p===idx)cls+=' cur';
+    return `<button class="${cls}" onclick="go(${p})">${p+1}</button>`;
+  }).join('');
+  const last=idx===N-1;
+  app.innerHTML=`
+    <div class="card">
+      <div class="stats">
+        <span class="pill">Score ${c}/${N}</span>
+        <span class="pill">Question ${idx+1} of ${N}</span>
+        <span class="pill">Correct ${c}</span>
+        <span class="pill">Incorrect ${w}</span>
+        <span class="pill">Done ${pct}%</span>
+      </div>
+      <div class="bar"><div style="width:${pct}%"></div></div>
+      <div class="muted" style="margin-top:6px">Question ${idx+1} · ${it.t==='m'?'Multiple choice':'Full form'} · Original #${it.n}</div>
+    </div>
+    <div class="card">
+      <div class="q">${idx+1}. ${esc(it.q)}</div>
+      ${body}
+      ${feedback}
+      <div class="row">
+        <button class="btn sec" onclick="prev()" ${idx===0?'disabled':''}>← Previous</button>
+        ${last
+          ? `<button class="btn" onclick="view='results';render()" ${it.ok===null?'disabled':''}>See results</button>`
+          : `<button class="btn" onclick="next()" ${it.ok===null?'disabled':''}>Next →</button>`}
+      </div>
+      ${it.ok===null?'<div class="muted" style="margin-top:8px">Answer this question to unlock Next.</div>':''}
+    </div>
+    <div class="card">
+      <div class="row" style="margin-top:0"><b>Navigator</b><button class="btn small sec" onclick="view='start';render()">Chapters</button> <button class="btn small sec" onclick="view='results';render()">Results so far</button></div>
+      <div class="muted" style="margin-top:4px">Green = correct, red = incorrect, outlined = current. Tap a number to review or change nothing.</div>
+      <div class="grid">${grid}</div>
+    </div>`;
+}
+render();
+function openCredit(){$('credit').classList.add('open')}
+function closeCredit(){$('credit').classList.remove('open')}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCredit()});
+</script>
+</body>
+</html>
